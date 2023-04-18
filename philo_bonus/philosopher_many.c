@@ -35,17 +35,6 @@ static void	wait_and_kill_process(t_data *data)
 	}
 }
 
-static void	handle_exit(t_data *data)
-{
-	if (data->died_any_philosopher == 1)
-	{
-		clear_data(data);
-		exit(1);
-	}
-	clear_data(data);
-	exit(0);
-}
-
 static void	*died_checker(void *void_philosopher)
 {
 	t_philosopher	*philosopher;
@@ -60,8 +49,6 @@ static void	*died_checker(void *void_philosopher)
 		philosopher->last_eating_time > data->time_to_die)
 			philosopher_died(data, philosopher);
 		sem_post(data->is_eating);
-		if (data->died_any_philosopher == 1)
-			break ;
 		sem_wait(data->is_eating);
 		if (data->philosopher_must_eat > 0 && \
 			philosopher->eating_count >= data->philosopher_must_eat)
@@ -82,13 +69,6 @@ static void	process_handle(t_data *data, t_philosopher *philosopher)
 		usleep(15000);
 	while (1)
 	{
-		sem_wait(data->death_checker);
-		if (data->died_any_philosopher == 1)
-		{
-			sem_post(data->death_checker);
-			break ;
-		}
-		sem_post(data->death_checker);
 		if (data->philosopher_must_eat > 0 && \
 			philosopher->eating_count >= data->philosopher_must_eat)
 			break ;
@@ -97,7 +77,9 @@ static void	process_handle(t_data *data, t_philosopher *philosopher)
 		philosopher_writer(philosopher, "is thinking");
 	}
 	pthread_join(philosopher->died_thread, NULL);
-	handle_exit(data);
+	if (data->died_any_philosopher == 1)
+		exit(1);
+	exit(0);
 }
 
 void	philosopher_many(t_data *data)
