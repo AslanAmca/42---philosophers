@@ -46,6 +46,6 @@ void	philosopher_one(t_data *data)
 	}
 	waitpid(data->philosophers[0].process_id, &waitpid_return, 0);
 	if (waitpid_return != 0)
-		kill(data->philosophers[0].process_id, SIGKILL;
+		kill(data->philosophers[0].process_id, SIGKILL);
 	clear_data(data);
 }
