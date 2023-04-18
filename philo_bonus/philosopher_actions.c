@@ -78,10 +78,7 @@ void	philosopher_died(t_data *data, t_philosopher *philosopher)
 {
 	philosopher_writer(philosopher, "died");
 	sem_wait(data->writer);
-	sem_wait(data->death_checker);
 	data->died_any_philosopher = 1;
-	sem_post(data->death_checker);
 	sem_post(data->is_eating);
-	clear_data(data);
 	exit(1);
 }
